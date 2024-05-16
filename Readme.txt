@@ -1,1 +1,1 @@
-Extracting Data from RO files are exhausting because data entry stuff don't know how data is important.
+This Repo include all the files that I used in Hyundai After Sale Services. All the scripts are small program.
