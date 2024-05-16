@@ -1,10 +1,10 @@
 import os
 import pandas as pd
 
-def get_excel_files_in_folder(folder_path):
+def list_excel_files(directory_path):
     try:
-        # List all files in the folder
-        files = os.listdir(folder_path)
+        # List all files in the directory
+        files = os.listdir(directory_path)
         
         # Filter files to include only those with the '.xlsx' extension
         excel_files = [file.split('.')[0] for file in files if file.endswith('.xlsx')]
@@ -12,10 +12,10 @@ def get_excel_files_in_folder(folder_path):
         # Return the list of Excel file names without the extension
         return excel_files
     except FileNotFoundError:
-        print("Folder not found.")
+        print("Directory not found.")
         return []
 
-def is_empty_row(row):
+def row_is_empty(row):
     return all(value is None for value in row)
 
 # Load the Excel file into a pandas DataFrame, skipping the first column and the first row
@@ -30,41 +30,41 @@ df = df.iloc[:, 1:]
 pending_df = df[df['Pending Cars'] == 'Pending']
 
 # Convert the 'RO No' column to a list
-ronumber_list = pending_df["RO No"].tolist()
+ro_number_list = pending_df["RO No"].tolist()
 
 # Prompt the user to input the folder path
-# folder_path = input("Enter the folder path: ")
-folder_path = rf"Z:\IKLM_ASD\Reception\Mr.LEE\Pending"
+# directory_path = input("Enter the folder path: ")
+directory_path = rf"Z:\IKLM_ASD\Reception\Mr.LEE\Pending"
 
 # Validate the folder path
-if not os.path.exists(folder_path):
-    print("Invalid folder path.")
+if not os.path.exists(directory_path):
+    print("Invalid directory path.")
     exit()
 
 # Get the list of Excel files with the '.xlsx' extension
-excel_files = get_excel_files_in_folder(folder_path)
+excel_files = list_excel_files(directory_path)
 sequence = 0
 
-# Open a text file for writing the output
-output_file_path = os.path.join(os.path.expanduser('~'), 'Desktop', 'output.txt')
+# Open a text file for writing the output in the same directory path
+output_file_path = os.path.join(folder_path , 'output.txt')
 with open(output_file_path, 'w') as f:
-    for ronumber in ronumber_list:
+    for ro_number in ro_number_list:
         ro_found = False
         for file in excel_files:
-            if ronumber in file:
+            if ro_number in file:
                 sequence += 1
                 if 'finished' in file.lower():
-                    output_text = f"{sequence} {ronumber} Finished\n"
+                    output_text = f"{sequence} {ro_number} Finished\n"
                     print(output_text.strip())
                     f.write(output_text)
                 else:
-                    output_text = f"{sequence} {ronumber} Pending\n"
+                    output_text = f"{sequence} {ro_number} Pending\n"
                     print(output_text.strip())
                     f.write(output_text)
                 ro_found = True
                 break
         if not ro_found:
-            output_text = f"RO number {ronumber} not found in folder.\n"
+            output_text = f"RO number {ro_number} not found in folder.\n"
             print(output_text.strip())
             f.write(output_text)
 
