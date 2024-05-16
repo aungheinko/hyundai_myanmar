@@ -554,13 +554,6 @@ for file_name in file_list:
                    car_name, car_type, car_maker, car_plate_no, car_vin_no, car_mile_age, car_color, car_model_year,
                    customer_type, customer_name, customer_contact_1, service_purpose, service_type,
                service_reason, repair_type,"","","","","",retail_part, retail_labour, part_discount, labour_discount, part_tax_percent, labour_tax_percent,None, None,subtotal,last_value,0,last_value,"FOC",None,None,None,None,"Mr. Kyi Soe","A",advisor_solve])
-            
-# progress_bar.close()          
-# Save the workbook to a file
-output_file_path = os.path.join(folder_path, 'ExtractedDataFromRO.xlsx')
-new_file.save(output_file_path)
-print("Output file saved successfully at:", output_file_path)
-
 
 def list_excel_files(directory_path):
     try:
@@ -607,8 +600,8 @@ excel_files = list_excel_files(directory_path)
 sequence = 0
 
 # Open a text file for writing the output in the same directory path
-output_file_path = os.path.join(folder_path , 'Pending&FinishedList.txt')
-with open(output_file_path, 'w') as f:
+pending_output_file_path = os.path.join(folder_path , 'Pending&FinishedList.txt')
+with open(pending_output_file_path, 'w') as f:
     for ro_number in ro_number_list:
         ro_found = False
         for file in excel_files:
@@ -628,5 +621,10 @@ with open(output_file_path, 'w') as f:
             output_text = f"RO number {ro_number} not found in folder.\n"
             print(output_text.strip())
             f.write(output_text)
-
-print("Pending Check List Output written to", output_file_path)
+            
+# progress_bar.close()          
+# Save the workbook to a file
+de_output_file_path = os.path.join(folder_path, 'ExtractedDataFromRO.xlsx')
+new_file.save(de_output_file_path)
+print("Extraced Data from RO Files saved successfully at:", de_output_file_path)
+print("Pending Check file saved successfully at", pending_output_file_path)
