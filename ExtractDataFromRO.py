@@ -508,6 +508,14 @@ for file_name in file_list:
                    car_name, car_type, car_maker, car_plate_no, car_vin_no, car_mile_age, car_color, car_model_year,
                    customer_type, customer_name, customer_contact_1, service_purpose, service_type,
                service_reason, repair_type,"",ro_number,"","","",retail_part, retail_labour, part_discount, labour_discount, part_tax_percent, labour_tax_percent,None, None,None,0,0,0,"QO",None,None,None,None,"Mr. Kyi Soe","A",advisor_solve])
+            elif pending == "Pending":
+                sequence += 1
+                print(sequence,".",ro_number,service_type)
+                ws.append([ro_number, car_takein_date, car_takein_time, car_takeout_date, car_takeout_time, pending,lead_day,
+                   car_name, car_type, car_maker, car_plate_no, car_vin_no, car_mile_age, car_color, car_model_year,
+                   customer_type, customer_name, customer_contact_1,"", pending,
+               service_reason,"","","","","","",retail_part, retail_labour, part_discount, labour_discount, part_tax_percent, labour_tax_percent,None, None,None,None,0,None,"Pending",None,None,None,None,"Mr. Kyi Soe","A",advisor_solve])
+
             elif service_type == "General":
                 financial_data = calculate_final_total(service_type,excel_file)
                 retail_part = financial_data[0]
@@ -523,17 +531,7 @@ for file_name in file_list:
                    car_name, car_type, car_maker, car_plate_no, car_vin_no, car_mile_age, car_color, car_model_year,
                    customer_type, customer_name, customer_contact_1, service_purpose, service_type,
                service_reason, repair_type,"","",ro_number.replace("R","P"),ro_number.replace("R","V"),hmsr,retail_part, retail_labour, part_discount, labour_discount, part_tax_percent, labour_tax_percent,None, None,subtotal,last_value,0,last_value,"CR",None,"No",None,None,"Mr. Kyi Soe","A",advisor_solve])
-                
-            elif service_type == "Pending":
-                sequence += 1
-                print(sequence,".",ro_number,service_type)
-                ws.append([ro_number, car_takein_date, car_takein_time, car_takeout_date, car_takeout_time, pending,lead_day,
-                   car_name, car_type, car_maker, car_plate_no, car_vin_no, car_mile_age, car_color, car_model_year,
-                   customer_type, customer_name, customer_contact_1,"", pending,
-               service_reason,"","","","","","",retail_part, retail_labour, part_discount, labour_discount, part_tax_percent, labour_tax_percent,None, None,subtotal,last_value,0,last_value,"Pending",None,None,None,None,"Mr. Kyi Soe","A",advisor_solve])
-
             elif service_type == "Warranty":
-
                 financial_data = calculate_final_total(service_type,excel_file)
                 retail_part = financial_data[0]
                 retail_labour = financial_data[1]
