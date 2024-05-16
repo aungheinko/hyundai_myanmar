@@ -46,7 +46,7 @@ excel_files = list_excel_files(directory_path)
 sequence = 0
 
 # Open a text file for writing the output in the same directory path
-output_file_path = os.path.join(folder_path , 'output.txt')
+output_file_path = os.path.join(directory_path , 'output.txt')
 with open(output_file_path, 'w') as f:
     for ro_number in ro_number_list:
         ro_found = False
