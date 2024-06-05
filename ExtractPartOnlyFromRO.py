@@ -1,57 +1,78 @@
+import os
 import openpyxl
+import warnings
+from tqdm import tqdm
 
-# Load the workbook and select the sheet
-file_path = r'D:\MISC\Playground\31.05.2024\Parts_R240531-001.xlsx'
-workbook = openpyxl.load_workbook(file_path, data_only=True)
-sheet = workbook['Repair_Order_02']
+# Suppress specific warning message about conditional formatting
+warnings.filterwarnings("ignore", category=UserWarning, message="Conditional Formatting extension is not supported and will be removed")
 
-# Initialize variables
-data_start = False
-header_row = ["RO NUMBER", "Parts No", "Description", "Price ($)", "Price (Ks)", "QTY", "Total Amount($)"]
-extracted_data = []
+def extract_data_from_excel(file_path):
+    try:
+        workbook = openpyxl.load_workbook(file_path, data_only=True)
+        sheet = workbook['Repair_Order_02']
 
-for row in sheet.iter_rows(values_only=True):
-    if not data_start:
-        # Check if the current row contains "Parts No"
-        if "RO-" in row:
-            ro_number = row[11]
-# Iterate through the rows to find the header and extract data
-for row in sheet.iter_rows(values_only=True):
-    if not data_start:
-        # Check if the current row contains "Parts No"
-        if "Parts No" in row:
-            data_start = True
-    else:
-        # If the row contains "Total", stop extracting
-        if any(cell is not None and "Total" in str(cell) for cell in row):
-            break
-        # Append the row to extracted_data if it meets the criteria
-        if row[3] is not None or row[4] is not None:
-            if row[9] is not None:
-                total = row[9] * row[11]
+        data_start = False
+        extracted_data = []
+        ro_number = None
+
+        for row in sheet.iter_rows(values_only=True):
+            if not data_start:
+                if row and "TEL:  / FAX: " in str(row):
+                    ro_number = row[11]
             else:
-                total = (row[10]/2100) * row[11]
-            extracted_data.append([ro_number,row[2],row[3], row[9], row[10], row[11],total])
-            print([ro_number,row[2],row[3], row[9], row[10], row[11],total])
-            # print(ro_number,row)
-            # extracted_data.append([ro_number,row])
-            # extracted_data.append([ro_number,row[3], row[4], row[9], row[10], row[11]])
+                if any(cell is not None and "Total" in str(cell) for cell in row):
+                    break
+                if row[3] is not None or row[4] is not None:
+                    if row[9] is not None:
+                        total = row[9] * row[11]
+                    else:
+                        total = (row[10] / 2100) * row[11]
+                    extracted_data.append([ro_number, row[2], row[3], row[9], row[10], row[11], total])
 
-# Create a new workbook and add a sheet to store the extracted data
-new_workbook = openpyxl.Workbook()
-new_sheet = new_workbook.active
-new_sheet.title = "Extracted_Data"
+            if not data_start:
+                if row and "Parts No" in row:
+                    data_start = True
 
-# Write the header row to the new sheet
-new_sheet.append(header_row)
+        # Filter out rows where ro_number starts with 'Q'
+        filtered_data = [data for data in extracted_data if not data[0].startswith('Q')]
 
-# Write the extracted data to the new sheet
-for data_row in extracted_data:
-    new_sheet.append(data_row)
+        return filtered_data
 
-# Define the new file path
-new_file_path = r'D:\MISC\Playground\31.05.2024\extracted_data.xlsx'
+    except Exception as e:
+        print(f"Error processing file {file_path}: {e}")
+        return []
 
-# Save the new workbook with the extracted data
-new_workbook.save(new_file_path)
-print(f"Data extraction complete. Saved as '{new_file_path}'")
+def get_files_in_folder(folder_path):
+    try:
+        files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(".xlsx")]
+        return files
+    except FileNotFoundError:
+        print("Folder not found.")
+        return []
+
+def main():
+    folder_path = input("Enter the folder path: ")
+
+    if not os.path.exists(folder_path):
+        print("Invalid folder path.")
+        return
+
+    file_list = get_files_in_folder(folder_path)
+    new_workbook = openpyxl.Workbook()
+    new_sheet = new_workbook.active
+    new_sheet.title = "Extracted_Data"
+
+    header_row = ["RO NUMBER", "Parts No", "Description", "Price ($)", "Price (Ks)", "QTY", "Total Amount($)"]
+    new_sheet.append(header_row)
+
+    for file_name in tqdm(file_list, desc="Processing files"):
+        extracted_data = extract_data_from_excel(file_name)
+        for data_row in extracted_data:
+            new_sheet.append(data_row)
+
+    new_file_path = os.path.join(folder_path, 'extracted_data.xlsx')
+    new_workbook.save(new_file_path)
+    print(f"Data extraction complete. Saved as '{new_file_path}'")
+
+if __name__ == "__main__":
+    main()
