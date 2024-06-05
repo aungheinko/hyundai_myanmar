@@ -52,6 +52,7 @@ def get_files_in_folder(folder_path):
 
 def main():
     folder_path = input("Enter the folder path: ")
+    os.system('cls')
 
     if not os.path.exists(folder_path):
         print("Invalid folder path.")
