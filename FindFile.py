@@ -1,31 +1,78 @@
 import os
+import openpyxl
+import warnings
+from tqdm import tqdm
 
-def find_files_with_string(root_folder, search_string):
-    matching_files = []
-    
-    # Walk through each directory and subdirectory
-    for root, dirs, files in os.walk(root_folder):
-        # Iterate through each file in the current directory
-        for file in files:
-            # Check if the search string is in the filename
-            if search_string in file:
-                matching_files.append(os.path.join(root, file))
-    
-    return matching_files
+# Suppress specific warning message about conditional formatting
+warnings.filterwarnings("ignore", category=UserWarning, message="Conditional Formatting extension is not supported and will be removed")
 
-# Root folder path where you want to search for files
-root_folder_path = 'Z:\IKLM_ASD\Reception\RO\RO_2023'
+def extract_data_from_excel(file_path):
+    try:
+        workbook = openpyxl.load_workbook(file_path, data_only=True)
+        sheet = workbook['Repair_Order_02']
 
-# Search string
-search_string = '4R-4616'
+        data_start = False
+        extracted_data = []
+        ro_number = None
 
-# Find files containing the search string in their filenames
-matching_files = find_files_with_string(root_folder_path, search_string)
+        for row in sheet.iter_rows(values_only=True):
+            if not data_start:
+                if row and "TEL:  / FAX: " in str(row):
+                    ro_number = row[11]
+            else:
+                if any(cell is not None and "Total" in str(cell) for cell in row):
+                    break
+                if row[3] is not None or row[4] is not None:
+                    if row[9] is not None:
+                        total = row[9] * row[11]
+                    else:
+                        total = (row[10] / 2100) * row[11]
+                    extracted_data.append([ro_number, row[2], row[3], row[9], row[10], row[11], total])
 
-# Print the matching file paths
-if matching_files:
-    print("Matching files:")
-    for file_path in matching_files:
-        print(file_path)
-else:
-    print("No matching files found.")
+            if not data_start:
+                if row and "Parts No" in row:
+                    data_start = True
+
+        # Filter out rows where ro_number starts with 'Q'
+        filtered_data = [data for data in extracted_data if not data[0].startswith('Q')]
+
+        return filtered_data
+
+    except Exception as e:
+        print(f"Error processing file {file_path}: {e}")
+        return []
+
+def get_files_in_folder(folder_path):
+    try:
+        files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(".xlsx")]
+        return files
+    except FileNotFoundError:
+        print("Folder not found.")
+        return []
+
+def main():
+    folder_path = input("Enter the folder path: ")
+
+    if not os.path.exists(folder_path):
+        print("Invalid folder path.")
+        return
+
+    file_list = get_files_in_folder(folder_path)
+    new_workbook = openpyxl.Workbook()
+    new_sheet = new_workbook.active
+    new_sheet.title = "Extracted_Data"
+
+    header_row = ["RO NUMBER", "Parts No", "Description", "Price ($)", "Price (Ks)", "QTY", "Total Amount($)"]
+    new_sheet.append(header_row)
+
+    for file_name in tqdm(file_list, desc="Processing files"):
+        extracted_data = extract_data_from_excel(file_name)
+        for data_row in extracted_data:
+            new_sheet.append(data_row)
+
+    new_file_path = os.path.join(folder_path, 'extracted_data.xlsx')
+    new_workbook.save(new_file_path)
+    print(f"Data extraction complete. Saved as '{new_file_path}'")
+
+if __name__ == "__main__":
+    main()

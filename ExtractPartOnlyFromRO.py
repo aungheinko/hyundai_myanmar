@@ -1,7 +1,7 @@
 import openpyxl
 
 # Load the workbook and select the sheet
-file_path = r'D:\MyWorkingEnv\Hyundai\DaiyRo\Service_2R-7663_Warranty_R230125-018.xlsx'
+file_path = r'D:\MISC\Playground\31.05.2024\Parts_R240531-001.xlsx'
 workbook = openpyxl.load_workbook(file_path, data_only=True)
 sheet = workbook['Repair_Order_02']
 
@@ -50,7 +50,7 @@ for data_row in extracted_data:
     new_sheet.append(data_row)
 
 # Define the new file path
-new_file_path = r'D:\MyWorkingEnv\Hyundai\DaiyRo\extracted_data.xlsx'
+new_file_path = r'D:\MISC\Playground\31.05.2024\extracted_data.xlsx'
 
 # Save the new workbook with the extracted data
 new_workbook.save(new_file_path)
