@@ -20,7 +20,7 @@ def process_excel_file(excel_file_path, sheet_name):
     df = pd.read_excel(excel_file_path, sheet_name=sheet_name, skiprows=1)
     df = df.iloc[:, 1:]  # Remove the first column
     pending_df = df[df['Pending Cars'] == 'Pending']
-    return pending_df["RONo"].tolist()
+    return pending_df["RO No"].tolist()
 
 def write_output_to_file(output_file_path, ronumber_list, excel_files):
     """Write the output to a text file."""
