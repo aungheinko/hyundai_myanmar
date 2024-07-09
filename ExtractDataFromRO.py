@@ -104,8 +104,10 @@ def calculate_final_total(service_type, excel_file_path):
     part_sale_total = 0
     for part in part_takeout_list:
         if part[9] is not None and part[9] != "Price ($)":
-            part_sale_total += part[9] * part[11]
-
+            try:
+                part_sale_total += part[9] * part[11]
+            except Exception as e:
+                print(e)
     total_labour_charges = 0
     for labour in labour_charges_list:
         if labour[11] is not None and labour[11] != "LTS":
@@ -228,7 +230,7 @@ file_list = get_files_in_folder(folder_path)
 new_file = Workbook()
 ws = new_file.active
 
-cash_collection_file = rf"D:\Working Enviroment\Database\Daily Cash Collection.xlsx"
+cash_collection_file = rf"D:\FUCK\Working Enviroment\Database\Daily Cash Collection.xlsx"
 cash_collection_workbook = load_workbook(cash_collection_file)
 cash_collection_daily_sheet = cash_collection_workbook['Daily']
 cash_collection_data = []
