@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timedelta
 
 # Load the Excel file
-file_path = rf"D:\Database\AS_Daily_Service_Status_2024.xlsx"
+file_path = rf"C:\Users\asservices012\KBTC\Data Science Study Group - Hyundai Work Data - Hyundai Work Data\Database\AS_Daily_Service_Status_2024.xlsx"
 df = pd.read_excel(file_path, engine="openpyxl", sheet_name="IKLM_data", skiprows=1)
 
 # Convert the "Take In Date" column to datetime format
