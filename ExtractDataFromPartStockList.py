@@ -19,7 +19,7 @@ def load_excel_file(file_path, password):
 
 def process_excel_data(decrypted):
     """Read and process the Excel file."""
-    df = pd.read_excel(decrypted, engine="openpyxl", sheet_name="Sep", skiprows=27)
+    df = pd.read_excel(decrypted, engine="openpyxl", sheet_name="Oct", skiprows=27)
     
     # Drop unnecessary columns and reset index
     df = df.drop(index=0).reset_index(drop=True)
