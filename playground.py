@@ -1,24 +1,17 @@
-import openpyxl
+import os
 
-def extract_data_from_excel(file_path):
-    # Load the workbook and select the specific sheet
-    workbook = openpyxl.load_workbook(file_path)
-    sheet = workbook['Repair_Order_01']
-    
-    # Extract data from merged cells L26:M26
-    merged_cell_LM26 = sheet['L26'].value
-    
-    # Extract data from cell H34
-    cell_H34 = sheet['H34'].value
-    
-    # Extract data from merged cells I34:J34
-    merged_cell_IJ34 = sheet['I34'].value
-    
-    # Print the extracted data
-    print("Data from merged cells L26:M26:", merged_cell_LM26)
-    print("Data from cell H34:", cell_H34)
-    print("Data from merged cells I34:J34:", merged_cell_IJ34)
+def delete_thumb_pictures(folder_path):
+    # Loop through all files in the given folder
+    for filename in os.listdir(folder_path):
+        # Check if the file is a picture and contains "_thumb" in the name
+        if "_thumb" in filename and (filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".jpeg")):
+            file_path = os.path.join(folder_path, filename)
+            try:
+                os.remove(file_path)  # Delete the file
+                print(f"Deleted: {file_path}")
+            except Exception as e:
+                print(f"Error deleting {file_path}: {e}")
 
-# Ask the user for the Excel file path
-file_path = input("Enter the Excel file path: ")
-extract_data_from_excel(file_path)
+# Example usage
+folder_path = rf"C:\Users\asservices012\Downloads\Telegram Desktop\ChatExport_2024-10-07\photos"  # Replace with the folder path
+delete_thumb_pictures(folder_path)
