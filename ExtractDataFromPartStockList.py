@@ -39,10 +39,6 @@ def process_excel_data(decrypted):
     
     return df
 
-import pandas as pd
-
-import pandas as pd
-
 def group_by_model(df):
     """Group by 'Updated Model' and calculate End FOB Total."""
     # Filter and clean the data
