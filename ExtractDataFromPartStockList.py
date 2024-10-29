@@ -39,19 +39,49 @@ def process_excel_data(decrypted):
     
     return df
 
+import pandas as pd
+
+import pandas as pd
+
 def group_by_model(df):
     """Group by 'Updated Model' and calculate End FOB Total."""
+    # Filter and clean the data
     model_filter = df[df['Updated Model'] != '-'].copy()
     model_filter['End FOB Total'] = pd.to_numeric(model_filter['End FOB Total'], errors='coerce').fillna(0)
     
+    # Group by 'Updated Model' and calculate the sum of 'End FOB Total'
     group_by_model = model_filter.groupby('Updated Model')["End FOB Total"].sum().reset_index()
     end_fob_total = group_by_model['End FOB Total'].sum()
     
-    # Add grand total row
-    grand_total_row = pd.DataFrame({'Updated Model': ['End FOB Total'], 'End FOB Total': [end_fob_total]})
-    group_by_model_final = pd.concat([group_by_model, grand_total_row], ignore_index=True)
-    
-    return group_by_model_final
+    # Create initial dictionary with model totals
+    model_dict = {row['Updated Model']: row['End FOB Total'] for _, row in group_by_model.iterrows()}
+    model_dict['End FOB Total'] = end_fob_total
+
+    # Re-map model keys to desired structure and aggregate values
+    renamed_dict = {
+        "Accent": model_dict.get("Accent", 0),
+        "Creta": model_dict.get("Creta", 0),
+        "Elantra": model_dict.get("Elantra", 0),
+        "Grand i10": model_dict.get("I-10", 0),
+        "H1": model_dict.get("H-1", 0),
+        "H100": model_dict.get("H-100", 0),
+        "Other": (
+            model_dict.get("Azera", 0) +
+            model_dict.get("Genesis", 0) +
+            model_dict.get("HD120", 0) +
+            model_dict.get("I-30", 0)
+        ),
+        "Santafe": model_dict.get("Santafe", 0),
+        "Sonata": model_dict.get("Sonata", 0),
+        "Tucson": model_dict.get("Tucson", 0),
+        "Reina": model_dict.get("Reina", 0),
+        "End FOB Total": end_fob_total  # Grand total
+    }
+
+    # Convert renamed_dict to a DataFrame for a clean output
+    renamed_df = pd.DataFrame(list(renamed_dict.items()), columns=['Updated Model', 'End FOB Total'])
+
+    return renamed_df
 
 def group_by_class(df):
     """Group by 'Updated Class' and calculate End FOB Total."""

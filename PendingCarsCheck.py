@@ -19,7 +19,7 @@ def is_empty_row(row):
     return all(value is None for value in row)
 
 # Load the Excel file into a pandas DataFrame, skipping the first column and the first row
-excel_file_path = rf"C:\Users\asservices012\KBTC\Data Science Study Group - Hyundai Work Data - Hyundai Work Data\Database\AS_Daily_Service_Status_2024.xlsx     "
+excel_file_path = rf"C:\Users\asservices012\KBTC\Data Science Study Group - Hyundai Work Data - Hyundai Work Data\Database\AS_Daily_Service_Status_2024.xlsx"
 sheet_name = "IKLM_data"
 df = pd.read_excel(excel_file_path, sheet_name=sheet_name, skiprows=1)
 
