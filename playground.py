@@ -1,64 +1,46 @@
-import os
-from tkinter import Tk
-from tkinter import filedialog
-from PIL import Image, ImageDraw, ImageFont
+import threading
+import time
+import random
 
-# Function to ask user to select a directory
-def ask_directory(title):
-    root = Tk()
-    root.withdraw()  # Hide the root window
-    folder_selected = filedialog.askdirectory(title=title)
-    return folder_selected
+# Initialize the timer and a lock for thread safety
+timer = 60
+lock = threading.Lock()
+game_active = True
 
-# Function to add a text watermark
-def add_text_watermark(image, text, position, font_size=30):
-    # Create an editable image (RGBA to support transparency)
-    watermark_image = image.convert("RGBA")
-    
-    # Make the watermark overlay
-    txt_layer = Image.new("RGBA", watermark_image.size, (255,255,255,0))
-    draw = ImageDraw.Draw(txt_layer)
-    
-    # Set up font (you may need to specify the full path to the font file)
-    try:
-        font = ImageFont.truetype("arial.ttf", font_size)  # Use your desired font and size
-    except IOError:
-        font = ImageFont.load_default()
-    
-    # Add text to the image
-    draw.text(position, text, font=font, fill=(255, 255, 255, 128))  # White text with some transparency
-    
-    # Combine the watermark with the image
-    watermarked_image = Image.alpha_composite(watermark_image, txt_layer)
-    
-    # Convert back to RGB to save as JPEG
-    return watermarked_image.convert("RGB")
+def countdown():
+    """Countdown function to reduce the timer."""
+    global timer, game_active
+    while timer > 0 and game_active:
+        time.sleep(1)
+        with lock:
+            timer -= 1
+        print(f"Time left: {timer} seconds")
 
-# Get the input directory (where the .jfif files are)
-input_directory = ask_directory("Select the folder containing .jfif files")
+    if timer == 0:
+        print("Time's up! The game is over.")
 
-# Get the output directory (where the .jpeg files should be saved)
-output_directory = ask_directory("Select the folder where .jpeg files will be saved")
+def player(name):
+    """Simulate a player pressing the button."""
+    global timer, game_active
+    while game_active:
+        time.sleep(random.randint(1, 5))  # Random delay to simulate human behavior
+        with lock:
+            if timer > 0:
+                print(f"{name} pressed the button! Resetting timer to 60 seconds.")
+                timer = 60
+            else:
+                print(f"{name} tried to press the button but the game is over.")
+                game_active = False
 
-# Create the output directory if it doesn't exist
-if not os.path.exists(output_directory):
-    os.makedirs(output_directory)
+# Create and start threads for countdown and players
+countdown_thread = threading.Thread(target=countdown)
+player_threads = [threading.Thread(target=player, args=(f"Player {i+1}",)) for i in range(3)]
 
-# Loop through all files in the input directory
-for filename in os.listdir(input_directory):
-    # Check if the file is a .jfif file
-    if filename.endswith('.jfif'):
-        # Open the image file
-        with Image.open(os.path.join(input_directory, filename)) as img:
-            # Convert the image to .jpeg
-            new_filename = filename.replace('.jfif', '.jpeg')
-            
-            # Add watermark (customize the text and position)
-            watermarked_img = add_text_watermark(img, text="Style Inspiration Daily", position=(30, 30))
-            
-            # Save the image in .jpeg format
-            watermarked_img.save(os.path.join(output_directory, new_filename), 'JPEG')
+countdown_thread.start()
+for thread in player_threads:
+    thread.start()
 
-        print(f"Converted {filename} to {new_filename} with watermark")
-
-print("All conversions with watermarks are complete!")
+# Wait for all threads to finish
+countdown_thread.join()
+for thread in player_threads:
+    thread.join()

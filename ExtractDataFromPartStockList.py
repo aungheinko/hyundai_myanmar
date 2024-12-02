@@ -4,7 +4,7 @@ import io
 import datetime
 
 # Define the file path and password
-file = r"C:\Users\asservices012\KBTC\Data Science Study Group - Hyundai Work Data - Hyundai Work Data\Part Data\2024 Parts stock list.xlsx"
+file = r"C:\Users\asservices012\OneDrive - KBTC\Part Data\2024 Parts stock list.xlsx"
 
 def load_excel_file(file_path, password):
     """Decrypt and load the password-protected Excel file."""

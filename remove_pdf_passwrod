@@ -1,0 +1,30 @@
+from PyPDF2 import PdfReader, PdfWriter
+
+def remove_pdf_password(input_pdf, output_pdf, password):
+    try:
+        # Open the PDF file
+        reader = PdfReader(input_pdf)
+        if reader.is_encrypted:
+            # Decrypt the file using the provided password
+            reader.decrypt(password)
+        
+        # Create a writer object
+        writer = PdfWriter()
+        
+        # Copy all pages to the new PDF
+        for page in reader.pages:
+            writer.add_page(page)
+        
+        # Write the output PDF without encryption
+        with open(output_pdf, "wb") as output_file:
+            writer.write(output_file)
+        print(f"Password removed successfully! File saved as {output_pdf}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+# Input and output file paths
+input_pdf = r"C:\Users\asservices012\Documents\0493xxxxxxxx195_20241111002516_20.pdf"  # Replace with your PDF file
+output_pdf = r"C:\Users\asservices012\Documents\0493xxxxxxxx195_20241111002516_20_.pdf"  # Name for the output file
+password = "04032001"  # Password to remove
+
+remove_pdf_password(input_pdf, output_pdf, password)
