@@ -4,7 +4,7 @@ import io
 import datetime
 
 # Define the file path and password
-file = r"C:\Users\asservices012\OneDrive - KBTC\Part Data\2024 Parts stock list.xlsx"
+file = r"C:\Users\asservices012\OneDrive - KBTC\Part Data\2025 Parts stock list.xlsx"
 
 def load_excel_file(file_path, password):
     """Decrypt and load the password-protected Excel file."""
@@ -19,7 +19,7 @@ def load_excel_file(file_path, password):
 
 def process_excel_data(decrypted):
     """Read and process the Excel file."""
-    df = pd.read_excel(decrypted, engine="openpyxl", sheet_name="Dec", skiprows=27)
+    df = pd.read_excel(decrypted, engine="openpyxl", sheet_name="Jan", skiprows=27)
     
     # Drop unnecessary columns and reset index
     df = df.drop(index=0).reset_index(drop=True)
